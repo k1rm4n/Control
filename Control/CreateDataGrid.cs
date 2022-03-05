@@ -42,6 +42,12 @@ namespace Control
             Text = "Delete"
         };
 
+        Button btnEdit = new Button()
+        {
+            Location = new Point(740, 150),
+            Text = "Edit"
+        };
+
 
         DataGridView dataGridView = new DataGridView()
         {
@@ -56,27 +62,21 @@ namespace Control
         public DataGridView GetDGV { get { return dataGridView; } set { dataGridView = value; } }
         public void CreateDataGridView(Form form)
         {
-            LoadData();
-            
             form.Controls.Add(dataGridView);
+            LoadData();
             form.Controls.Add(btnAdd);
             form.Controls.Add(btnUpdate);
             form.Controls.Add(btnDelete);
+            form.Controls.Add(btnEdit);
             btnAdd.Click += BtnAdd_Click;
             btnUpdate.Click += BtnUpdate_Click;
             btnDelete.Click += BtnDelete_Click;
-            dataGridView.RowsAdded += DataGridView_RowsAdded;
+            btnEdit.Click += BtnEdit_Click; 
+        }
 
-            if (secondCount > dataGridView.Rows.Count)
-            {
-                dataGridView.CellValueChanged -= DataGridView_CellValueChanged;
-                secondCount = dataGridView.Rows.Count + firstCount;
-                firstCount = 0;
-            }
-            else
-            {
-                EditData();
-            }
+        private void BtnEdit_Click(object sender, EventArgs e)
+        {
+            EditData();
         }
 
         private void BtnDelete_Click(object sender, EventArgs e)
@@ -86,6 +86,7 @@ namespace Control
 
         private void BtnUpdate_Click(object sender, EventArgs e)
         {
+            dataGridView.CellClick -= DataGridView_CellClick;
             LoadData();
         }
 
@@ -114,6 +115,7 @@ namespace Control
             {
                 dataGridView.Columns[i].HeaderText = arrayNames[i];
             }
+
             db.CloseCon();
             
         }
@@ -169,7 +171,8 @@ namespace Control
 
             db.CloseCon();
             dataGridView.CellValueChanged += DataGridView_CellValueChanged;
-            
+            dataGridView.RowsAdded += DataGridView_RowsAdded;
+
         }
 
         private void DataGridView_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
@@ -178,18 +181,23 @@ namespace Control
             {
                 firstCount++;
             }
-            else if (firstCount >= 1)
+
+            if (firstCount == 1)
+            {
+                dataGridView.CellValueChanged -= DataGridView_CellValueChanged;
+            }
+            /*else if (firstCount >= 1)
             {
                 firstCount = 0;
-            }
-            secondCount = dataGridView.Rows.Count + firstCount;
+            }*/
+            /*secondCount = dataGridView.Rows.Count + firstCount;*/
         }
 
         private void DataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
-            try
+            /*try
             {
-                /*if (secondCount > dataGridView.Rows.Count)
+                if (secondCount > dataGridView.Rows.Count)
                 {
                     dataGridView.CellValueChanged -= DataGridView_CellValueChanged;
                     secondCount = dataGridView.Rows.Count + firstCount;
@@ -197,32 +205,36 @@ namespace Control
                 }
                 else
                 {*/
-                string id = dataGridView[0, e.RowIndex].Value.ToString();
-                string value = dataGridView[e.ColumnIndex, e.RowIndex].Value.ToString();
-                string valueColumn = "";
+            string id = dataGridView[0, e.RowIndex].Value.ToString();
+            string value = dataGridView[e.ColumnIndex, e.RowIndex].Value.ToString();
+            string valueColumn = "";
 
-                valueColumn = nameColumns[e.ColumnIndex].ToString();
+            valueColumn = nameColumns[e.ColumnIndex].ToString();
 
-                string query = $"UPDATE {NameTable} SET {valueColumn} = '{value}' WHERE id = {id}";
+            string query = $"UPDATE {NameTable} SET {valueColumn} = '{value}' WHERE id = {id}";
 
-                MySqlCommand cmd = new MySqlCommand(query, db.Connection());
+            MySqlCommand cmd = new MySqlCommand(query, db.Connection());
 
-                db.OpenCon();
+            db.OpenCon();
 
-                cmd.ExecuteNonQuery();
+            cmd.ExecuteNonQuery();
 
-                db.CloseCon();
-                /*}*/
+            db.CloseCon();
+
+            LoadData();
+                
+            /*    }
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
-            }
+            }*/
 
         }
 
         public void DeleteData()
         {
+            dataGridView.CellValueChanged -= DataGridView_CellValueChanged;
             dataGridView.CellClick += DataGridView_CellClick;
         }
 
@@ -243,14 +255,11 @@ namespace Control
                 cmd.ExecuteNonQuery();
 
                 db.CloseCon();
-
-                LoadData();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
-            dataGridView.CellClick -= DataGridView_CellClick;
         }
     }
 }

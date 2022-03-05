@@ -13,7 +13,9 @@ namespace Control
 {
     public partial class Form1 : Form
     {
-        CreateDataGrid createData = new CreateDataGrid();
+        
+
+        private Dictionary<string, CreateDataGrid> dictionaryData = new Dictionary<string, CreateDataGrid>();
         public Form1()
         {
             InitializeComponent();
@@ -25,30 +27,19 @@ namespace Control
             
             if (comboBoxState == "2219")
             {
-                createData.NameTable = "group_A";
-                createData.CreateDataGridView(this);
-            }
-            else if (comboBoxState == "2118")
-            {
-                createData.NameTable = "group_B";
-                createData.CreateDataGridView(this);
-            }
-            else if (comboBoxState == "2119")
-            {
-                createData.NameTable = "group_C";
-                createData.CreateDataGridView(this);
-            }
-            else if (comboBoxState == "1220")
-            {
-                createData.NameTable = "group_D";
-                createData.CreateDataGridView(this);
-            }
-            else if (comboBoxState == "3121")
-            {
-                createData.NameTable = "group_E";
-                createData.CreateDataGridView(this);
-            }
+                CreateDataGrid createData;
+                bool sucess = dictionaryData.TryGetValue("2219",out createData);
+                if (!sucess)
+                {
+                    createData = new CreateDataGrid();
+                    createData.NameTable = "group_A";
+                    createData.CreateDataGridView(this);
+                    
+                    dictionaryData.Add("2219", createData);
+                }
 
+                
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
