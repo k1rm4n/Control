@@ -13,9 +13,9 @@ namespace Control
 {
     public partial class Form1 : Form
     {
-        
+        private CreateDataGrid createData;
 
-        private Dictionary<string, CreateDataGrid> dictionaryData = new Dictionary<string, CreateDataGrid>();
+       
         public Form1()
         {
             InitializeComponent();
@@ -24,27 +24,36 @@ namespace Control
         private void ComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
             string comboBoxState = ComboBox.Items[ComboBox.SelectedIndex].ToString();
-            
-            if (comboBoxState == "2219")
+
+            if (createData == null)
             {
-                CreateDataGrid createData;
-                bool sucess = dictionaryData.TryGetValue("2219",out createData);
-                if (!sucess)
-                {
-                    createData = new CreateDataGrid();
-                    createData.NameTable = "group_A";
-                    createData.CreateDataGridView(this);
-                    
-                    dictionaryData.Add("2219", createData);
-                }
-
-                
+                createData = new CreateDataGrid(comboBoxState);
+                createData.CreateDataGridView(this);
+                createData.DeletePresetOptionsPenalties(this);
+                createData.DeletePresetOptionsEncouragement(this);
             }
-        }
+            else
+            {
+                createData.NameTable = comboBoxState;
+                createData.DeleteDGV(this);
+                createData.CreateDataGridView(this);
+            }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-            
+            if (comboBoxState == "Взыскания")
+            {
+                createData.AddPresetOptionsPenalties(this);
+                createData.DeleteDGV(this);
+            }
+            else if (comboBoxState == "Поощирения")
+            {
+                createData.AddPresetOptionsEncouragement(this);
+                createData.DeleteDGV(this);
+            }
+            else
+            {
+                createData.DeletePresetOptionsPenalties(this);
+                createData.DeletePresetOptionsEncouragement(this);
+            }
         }
     }
 }

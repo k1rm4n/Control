@@ -40,7 +40,9 @@ namespace Control
             "2118",
             "2119",
             "1220",
-            "3121"});
+            "3121",
+            "Взыскания",
+            "Поощирения"});
             this.ComboBox.Location = new System.Drawing.Point(717, 12);
             this.ComboBox.Name = "ComboBox";
             this.ComboBox.Size = new System.Drawing.Size(121, 23);
@@ -56,7 +58,6 @@ namespace Control
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Control";
-            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
